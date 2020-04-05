@@ -1,4 +1,13 @@
-# Implementing an interpreter for JL0
+# Julia Assignment 1: JL0 interpreter
+
+## Introduction
+
+This assignment should be done in pairs.
+
+This assignment is due before class on Wednesday, 15 April, at 08:00.
+Please submit on github [here](https://classroom.github.com/g/JaTnzbP-)
+
+# Overview
 
 In this assignment, you will implement an interpreter for a small subset of Julia, called JL0.
 
@@ -141,3 +150,9 @@ before each loop body. This should leave the iteration count on top of the stack
 ## Evaluating conditional jumps
 
 Implement the evaluation cases for `JEQ`, `JNE`, `JLT`, etc. in `eval.jl`.
+
+## Starter code
+
+We have provided you with a template to get started.
+You should only have to modify `src/lower.jl` and `src/eval.jl` where indicated.
+
