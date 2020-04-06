@@ -10,8 +10,7 @@ mutable struct State
     labels::Dict{Symbol,Int}
 
     function State(vars::Dict{Symbol,Int})
-        new(
-            1,
+        new(1,
             Int64[],
             vars,
             Dict{Symbol,Int64}(),
@@ -71,14 +70,17 @@ end
 
 function eval_insn(insn::SUB, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::MUL, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::DIV, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::PRINT, state)
@@ -112,24 +114,30 @@ end
 
 function eval_insn(insn::JEQ, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::JNE, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::JLT, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::JGT, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::JLE, state)
     @error("unimplemented")
+    state.pc = 0
 end
 
 function eval_insn(insn::JGE, state)
     @error("unimplemented")
+    state.pc = 0
 end

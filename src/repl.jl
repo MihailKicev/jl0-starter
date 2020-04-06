@@ -1,9 +1,9 @@
 function prompt()
-    print("J0> ")
+    print("JL0> ")
 end
 
 function repl()
-    println("Welcome to J0. Enter expressionx and watch them get evaluated! Type `:q` to quit.")
+    println("Welcome to JL0. Enter expressions and watch them get evaluated! Type `:q` to quit.")
     prompt()
 
     vars = Dict{Symbol,Int}()

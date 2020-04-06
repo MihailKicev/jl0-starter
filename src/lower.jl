@@ -90,26 +90,37 @@ function lower(e::If)::Vector{Insn}
     f_label = gensym("Lfalse")
     j_label = gensym("Ljoin")
 
+    # Sketch of the translation:
+    #
+    # If(c, t, f)
+    #
+    # lower c
+    # JEQ f_label
+    # lower t
+    # JMP j_label
+    # LABEL f_label
+    # lower f
+    # LABEL j_label
+
     if e.cond isa Bin && (e.cond.op in [:(==), :(!=), :(<), :(>), :(<=), :(>=)])
-        # If the condition is a binary comparison, generate a conditional jump.
+        # If the condition is a binary comparison, generate a conditional jump to the false branch.
         # Subtract and compare the result with 0; that is, (l < r) iff (l - r) < 0.
-        # The jump instruction is inverted to jump to the false branch.
 
         l = lower(e.cond.e1)
         r = lower(e.cond.e2)
 
         if e.cond.op == :(==)
-            jump = JNE(f_label)
-        elseif e.cond.op == :(!=)
             jump = JEQ(f_label)
+        elseif e.cond.op == :(!=)
+            jump = JNE(f_label)
         elseif e.cond.op == :(<)
-            jump = JGE(f_label)
-        elseif e.cond.op == :(>)
-            jump = JLE(f_label)
-        elseif e.cond.op == :(<=)
-            jump = JGT(f_label)
-        elseif e.cond.op == :(>=)
             jump = JLT(f_label)
+        elseif e.cond.op == :(>)
+            jump = JGT(f_label)
+        elseif e.cond.op == :(<=)
+            jump = JLE(f_label)
+        elseif e.cond.op == :(>=)
+            jump = JGE(f_label)
         else
             @error("invalid comparison")
         end
@@ -132,7 +143,7 @@ function lower(e::If)::Vector{Insn}
         # For all other conditions, evaluate it and jump to the false branch if 0.
         c = lower(e.cond)
         vcat(c,
-             Insn[JNE(f_label)],
+             Insn[JEQ(f_label)],
              t,
              Insn[JMP(j_label), LABEL(f_label)],
              f,
