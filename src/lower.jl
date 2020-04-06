@@ -105,22 +105,24 @@ function lower(e::If)::Vector{Insn}
     if e.cond isa Bin && (e.cond.op in [:(==), :(!=), :(<), :(>), :(<=), :(>=)])
         # If the condition is a binary comparison, generate a conditional jump to the false branch.
         # Subtract and compare the result with 0; that is, (l < r) iff (l - r) < 0.
+        # Invert the condition to jump to the false branch. With the subtraction, 0 on the stack
+        # means true.
 
         l = lower(e.cond.e1)
         r = lower(e.cond.e2)
 
         if e.cond.op == :(==)
-            jump = JEQ(f_label)
-        elseif e.cond.op == :(!=)
             jump = JNE(f_label)
+        elseif e.cond.op == :(!=)
+            jump = JEQ(f_label)
         elseif e.cond.op == :(<)
-            jump = JLT(f_label)
-        elseif e.cond.op == :(>)
-            jump = JGT(f_label)
-        elseif e.cond.op == :(<=)
-            jump = JLE(f_label)
-        elseif e.cond.op == :(>=)
             jump = JGE(f_label)
+        elseif e.cond.op == :(>)
+            jump = JLE(f_label)
+        elseif e.cond.op == :(<=)
+            jump = JGT(f_label)
+        elseif e.cond.op == :(>=)
+            jump = JLT(f_label)
         else
             @error("invalid comparison")
         end
