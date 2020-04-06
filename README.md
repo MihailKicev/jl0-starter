@@ -4,7 +4,7 @@
 
 This assignment should be done in pairs.
 
-This assignment is due before class on Wednesday, 15 April, at 08:00.
+This assignment is due before class on Wednesday, 22 April, at 08:00.
 Please submit on github [here](https://classroom.github.com/g/JaTnzbP-)
 
 # Overview
