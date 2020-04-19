@@ -69,18 +69,27 @@ function eval_insn(insn::ADD, state)
 end
 
 function eval_insn(insn::SUB, state)
-    @error("unimplemented")
-    state.pc = 0
+    y = pop!(state.stack)
+    x = pop!(state.stack)
+    push!(state.stack, x-y)
+    state.pc += 1
 end
 
 function eval_insn(insn::MUL, state)
-    @error("unimplemented")
-    state.pc = 0
+    y = pop!(state.stack)
+    x = pop!(state.stack)
+    push!(state.stack, x*y)
+    state.pc += 1
 end
 
 function eval_insn(insn::DIV, state)
-    @error("unimplemented")
-    state.pc = 0
+    y = pop!(state.stack)
+    if y == 0
+        @error("You can't divide by 0, INF")
+    end
+    x = pop!(state.stack)
+    push!(state.stack, /(x, y))
+    state.pc += 1
 end
 
 function eval_insn(insn::PRINT, state)
@@ -113,31 +122,55 @@ function eval_insn(insn::JMP, state)
 end
 
 function eval_insn(insn::JEQ, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x == 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end
 
 function eval_insn(insn::JNE, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x != 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end
 
 function eval_insn(insn::JLT, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x < 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end
 
 function eval_insn(insn::JGT, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x > 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end
 
 function eval_insn(insn::JLE, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x <= 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end
 
 function eval_insn(insn::JGE, state)
-    @error("unimplemented")
-    state.pc = 0
+    x = pop!(state.stack)
+    if x >= 0
+        state.pc = state.labels[insn.label]
+    else
+      state.pc+=1
+    end
 end

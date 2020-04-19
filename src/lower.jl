@@ -1,3 +1,5 @@
+
+#I discussed only the While function with Luca Omini and Vishnu Arudpiragasam
 """
     lower(e::Exp)
 
@@ -48,11 +50,11 @@ function lower(e::Bin)::Vector{Insn}
 
     # For boolean operators, translate to an `if` and lower.
     elseif e.op in [:(==), :(!=), :<, :<=, :>, :>=]
-        @error("unimplemented")
+        lower(If(e, Lit(1), Lit(0)))
     elseif e.op == :&    # &&
-        @error("unimplemented")
+        lower(If(e.e1, If(e.e2, Lit(1), Lit(0)), Lit(0)))
     elseif e.op == :|    # ||
-        @error("unimplemented")
+        lower(If(e.e1, Lit(1), If(e.e2, Lit(1), Lit(0))))
     else
         @error("unexpected binary expression")
     end
@@ -155,5 +157,30 @@ function lower(e::If)::Vector{Insn}
 end
 
 function lower(e::While)::Vector{Insn}
-    @error("unimplemented")
+
+
+    b_label = gensym("Lbottom")
+    t_label = gensym("Ltop")
+
+
+    if e.cond isa Bin && (e.cond.op in [:(==), :(!=), :(<), :(>), :(<=), :(>=)])
+        # If the condition is a binary comparison, generate a conditional jump to the false branch.
+        # Subtract and compare the result with 0; that is, (l < r) iff (l - r) < 0.
+        # Invert the condition to jump to the false branch. With the subtraction, 0 on the stack
+        # means true.
+
+        l = lower(e.cond.e1)
+        r = lower(e.cond.e2)
+
+
+        vcat(Insn[LDC(0)],Insn[JMP(b_label)],Insn[LABEL(t_label)],Insn[LDC(1)],Insn[ADD()],lower(e.body),Insn[POP()],Insn[LABEL(b_label)],lower(e.cond),Insn[JNE(t_label)])
+    elseif e.cond isa Lit && !(e.cond.value == 0 || e.cond.value == false)
+        # If the condition is true, just evaluate the true branch.
+        vcat(LDC(0),JMP(b_label),LABEL(t_label),LDC(1),ADD(),lower(e.body),POP(),LABEL(b_label),JMP(t_label))
+    elseif e.cond isa Lit && (e.cond.value == 0 || e.cond.value == false)
+        vcat(LDC(0))
+    else
+        # For all other conditions, evaluate it and jump to the false branch if 0.
+        vcat(LDC(0),JMP(b_label),LABEL(t_label),LDC(1),ADD(),lower(e.body),POP(),LABEL(b_label),lower(e.cond),JNE(t_label))
+    end
 end
